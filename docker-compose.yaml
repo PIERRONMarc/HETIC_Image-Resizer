@@ -1,0 +1,75 @@
+version: '3'
+services:
+    app: 
+        container_name: img-resizer_app
+        build: ./app
+        ports:
+            - "80:80"
+        volumes:
+            - ./app:/var/www/html
+        links:
+            - db:db
+            - rabbitmq:rabbitmq
+            - storage:storage
+    worker: 
+        container_name: img-resizer_worker
+        build: ./worker
+        volumes:
+            - ./worker:/var/www/html
+        links:
+            - db:db
+            - rabbitmq:rabbitmq
+            - storage:storage
+    db:
+        container_name: img-resizer_db
+        image: mysql
+        command: ["--default-authentication-plugin=mysql_native_password"]
+        volumes:
+                - "./.data/db/:/var/lib/mysql"
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+    phpmyadmin:
+        container_name: hetic-img_phpmyadmin
+        image: phpmyadmin/phpmyadmin
+        depends_on:
+        - db
+        ports:
+            - "8080:80"
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        container_name: img-resizer_rabbitmq
+        volumes:
+            - ./.data/rabbitmq/etc/:/etc/rabbitmq/
+            - ./.data/rabbitmq/data/:/var/lib/rabbitmq/
+            - ./.data/rabbitmq/logs/:/var/log/rabbitmq/
+        environment:
+            RABBITMQ_DEFAULT_USER: root
+            RABBITMQ_DEFAULT_PASS: root
+    storage:
+        image: stilliard/pure-ftpd
+        container_name: img-resizer_storage
+        ports:
+            - "21:21"
+            - "30000-30009:30000-30009"
+        volumes: 
+            - "./.data/storage/data/worker/avatar/:/home/worker/avatar/"
+            - "./.data/storage/passwd:/etc/pure-ftpd/passwd"
+        environment:
+            PUBLICHOST: "localhost"
+            FTP_USER_NAME: storage
+            FTP_USER_PASS: storage
+            FTP_USER_HOME: /home/storage/avatar
+    composer_app:
+        container_name: img-resizer_composer-app
+        restart: 'no'
+        image: composer
+        command: ["composer", "install", "--ignore-platform-reqs"]
+        volumes:
+            - ./app:/app
+    composer_worker:
+        container_name: img-resizer_composer-worker
+        restart: 'no'
+        image: composer
+        command: ["composer", "install", "--ignore-platform-reqs"]
+        volumes:
+            - ./worker:/app
