@@ -45,20 +45,15 @@ services:
         environment:
             RABBITMQ_DEFAULT_USER: root
             RABBITMQ_DEFAULT_PASS: root
-    storage:
-        image: stilliard/pure-ftpd
-        container_name: img-resizer_storage
-        ports:
-            - "21:21"
-            - "30000-30009:30000-30009"
-        volumes: 
-            - "./.data/storage/data/worker/avatar/:/home/worker/avatar/"
-            - "./.data/storage/passwd:/etc/pure-ftpd/passwd"
-        environment:
-            PUBLICHOST: "localhost"
-            FTP_USER_NAME: storage
-            FTP_USER_PASS: storage
-            FTP_USER_HOME: /home/storage/avatar
+     storage:
+      image: atmoz/sftp
+      container_name: img-resizer_storage
+      volumes:
+        - "./.data/storage/data/worker/avatar/:/home/worker/avatar/"
+        - "./.data/storage/passwd:/etc/pure-ftpd/passwd"
+      ports:
+         - "22:22"
+      command: storage:storage
     composer_app:
         container_name: img-resizer_composer-app
         restart: 'no'
