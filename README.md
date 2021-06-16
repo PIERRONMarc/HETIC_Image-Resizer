@@ -70,6 +70,8 @@ To store them, use FTP :
 -   username: storage
 -   password: storage
 
+To check if FTP works from the Worker container, use the `checkFtp()` function from `worker/testFtpConnection.php`. 
+
 ## Database container
 
 A MYSQL database that can be managed with PHPMyAdmin at [`localhost:8080`](http://localhost:8080) :
