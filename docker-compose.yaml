@@ -50,9 +50,6 @@ services:
         container_name: img-resizer_storage
         volumes:
             - "./.data/storage/data/worker/avatar/:/home/worker/avatar/"
-            - "./.data/storage/passwd:/etc/pure-ftpd/passwd"
-        ports:
-            - "22:22"
         command: storage:storage
     composer_app:
         container_name: img-resizer_composer-app
