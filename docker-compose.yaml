@@ -30,7 +30,7 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: root
     phpmyadmin:
-        container_name: hetic-img_phpmyadmin
+        container_name: img-resizer_phpmyadmin
         image: phpmyadmin/phpmyadmin
         depends_on:
         - db
@@ -53,7 +53,7 @@ services:
             - "21:21"
             - "30000-30009:30000-30009"
         volumes: 
-            - "./.data/storage/data/worker/avatar/:/home/worker/avatar/"
+            - "./.data/storage/data/avatar/:/home/storage/avatar/"
             - "./.data/storage/passwd:/etc/pure-ftpd/passwd"
         environment:
             PUBLICHOST: "localhost"

@@ -7,7 +7,7 @@ function dbConnect(){
     try
    {
         
-   $dsn = 'mysql:dbname=image_resizer;host=localhost';
+   $dsn = 'mysql:dbname=resizer;host=db';
    $user = 'root';
    $password = 'root';
    
@@ -26,9 +26,13 @@ function uploadAvatar($name,$path){
 
     $db = dbConnect();
 
-    $req_sql = 'INSERT INTO `Avatar` (`Name`, `Path`, `Created_at`, `Updated_at`) VALUES ("'.$name.'", "'.$path.'", "'.date('Y-m-d').'", "'.date('Y-m-d').'")' ;
+    $req_sql = 'INSERT INTO `Avatar` (`Name`, `Path`, `Created_at`) VALUES (:name, :path, :createdAt)' ;
     $prepare = $db->prepare($req_sql);   
-    $res = $prepare ->execute();
+    $res = $prepare ->execute([
+        'name' => $name,
+        'path' => $path,
+        'createdAt' => date('Y-m-d'),
+    ]);
 
     if($res == true){
 
@@ -76,27 +80,49 @@ function crop_image($path_image){
     return $image;
 }
 
+function upload_on_ftp($imageName)
+{
+    try {
+        $ftp = ftp_connect('storage');
+        if (false === $ftp) {
+            throw new Exception('Unable to connect');
+        }
+
+        $loggedIn = ftp_login($ftp,  'storage',  'storage');
+        if (true === $loggedIn) {
+            $to = $imageName;
+            $from = 'tmp/'.$imageName;
+            ftp_put($ftp, $to, $from);
+        } else {
+            throw new Exception('Unable to log in');
+        }
+
+        ftp_close($ftp);
+    } catch (Exception $e) {
+        echo "Failure: " . $e->getMessage();
+    }
+}
+
 function traitement_image($flux){
 
-$flux_tab = explode(';',$flux);
-$id_user = $flux_tab[0];
-$image_base64 = $flux_tab[1];
+    $message = json_decode($flux, TRUE);
 
-$imageBlob = base64_decode($image_base64);
-$imageCrop = crop_image($imageBlob);
-$name = kodex_random_string(5).'-'.kodex_random_string(5).'-'.kodex_random_string(5).'-'.kodex_random_string(5).'.jpg' ;
-$path = '/home/storage/avatar/';
-file_put_contents($name,$imageCrop);
+    $imageBlob = base64_decode($message['image_base64']);
 
-$idAvatar = uploadAvatar($name,$path.$name)['id'];
-if(!empty($idAvatar)){
-    updateAvatarUser($id_user,$idAvatar);
+    $imageCrop = crop_image($imageBlob);
+    $name = kodex_random_string(5).'-'.kodex_random_string(5).'-'.kodex_random_string(5).'-'.kodex_random_string(5).'.jpg' ;
+    $path = '/home/storage/avatar/';
+    file_put_contents("tmp/".$name,$imageCrop);
+    upload_on_ftp($name);
+    unlink("tmp/".$name);
+
+
+    $idAvatar = uploadAvatar($name,$path.$name)['id'];
+    if(!empty($idAvatar)){
+        updateAvatarUser($message['user_id'],$idAvatar);
+    }
+
 }
-
-}
-
-
-traitement_image(file_get_contents('rabbitmq-message.txt'));
 
 
 

@@ -2,6 +2,10 @@
 
 This school project aim to store user's profile and resize their avatar making use of a dedicated worker and a message broker.
 
+## Team
+
+PIERRON Marc, HANNA Filoupatir, FERNANDEZ Carolyne, MARCEL Guillaume
+
 ## Summary 
 
 - [The project](#MT4P2022_BACK-END_IMG-[WIP])

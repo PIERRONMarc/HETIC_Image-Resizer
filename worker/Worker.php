@@ -1,5 +1,6 @@
 <?php
 
+include('CropImage.php');
 require_once __DIR__ . '/vendor/autoload.php';
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
@@ -53,10 +54,7 @@ class Worker
      */
     public function action($msg) 
     {
-        $json = json_decode($msg->body, true);
-        echo ' [x] Received : ', implode(';', $json), "\n";
-
-        // .. insert code here ..
+        traitement_image($msg->body);
 
         // confirm that the task is done
         $msg->ack();
