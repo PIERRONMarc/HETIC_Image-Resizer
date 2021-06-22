@@ -32,7 +32,12 @@ $ docker-compose up
 ```sh
 $ docker exec img-resizer_worker php index.php
 ```
-3. Acces the app at [`localhost`](http://localhost). See [App container](#App-container) documentation for more information.
+3. Acces the app at [`localhost`](http://localhost). See [App container](#App-container) documentation for more information about the request to send.
+
+4. Project is working if :
+- when you send the request with the correct body, you get an http 201 created
+- database is populated (see [Database container](#Database-container) documentation) 
+- image is in the storage container (see [Storage container](#Storage-container)). It can also be found in `./.data/storage/data/avatar/` as it is in sync with the storage container.
 
 ## Folder structure
 
