@@ -28,7 +28,7 @@ $ docker-compose up
 ```sh
 $ docker exec img-resizer_worker php index.php
 ```
-3. Acces the app at [`localhost`](http://localhost). At the moment, this url send a message to the message broker. If the worker catch the message, your installation works perfectly.
+3. Acces the app at [`localhost`](http://localhost). See [App container](#App-container) documentation for more information.
 
 ## Folder structure
 
@@ -52,6 +52,19 @@ $ docker exec img-resizer_worker php index.php
 
 Client access the app at [`localhost`](http://localhost).
 
+The only endpoint available is /user in POST with the following request body :
+```json
+{
+  username: '',
+  password: '',
+  email: '',
+  image: ''
+}
+```
+Note :
+- username and email should be unique
+- image must be in base64 format
+
 ## Worker container
 
 Starting the worker : 
@@ -60,7 +73,7 @@ Starting the worker :
 $ docker exec img-resizer_worker php index.php
 ```
 
-Worker will listen to the 'image-resizing' queue list and execute his 'action' function each time a message is received by the message broker.
+Worker will listen to the Rabbitmq 'image-resizing' queue list and execute his 'action' function each time a message is received by the message broker.
 
 ## Storage container
 
@@ -72,7 +85,7 @@ To store them, use FTP :
 
 ## Database container
 
-A MYSQL database that can be managed with PHPMyAdmin at [`localhost:8080`](http://localhost:8080) :
+A MySQL database that can be managed with PHPMyAdmin at [`localhost:8080`](http://localhost:8080) :
 - username: root
 - password: root
 

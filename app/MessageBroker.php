@@ -31,9 +31,6 @@ class MessageBroker
         ]);
 
         $this->channel->basic_publish($msg, '', 'image-resizing');
-
-        echo " [x] Sent : " . implode(';', json_decode($data, true)). "\n";
-
         $this->close();
     }
 
