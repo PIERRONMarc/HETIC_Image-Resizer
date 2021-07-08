@@ -1,4 +1,4 @@
-# HETIC - Image Resizer [WIP]
+# HETIC - Image Resizer
 
 This school project aim to store user's profile and resize their avatar making use of a dedicated worker and a message broker.
 
